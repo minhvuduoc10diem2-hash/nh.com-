@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cờ Tư Lệnh</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+<header>
+  <div>
+    <h1>CỜ TƯ LỆNH</h1>
+  </div>
+  <div class="tools">
+    <button class="b" id="bRules">Luật chơi</button>
+    <button class="b" id="bFlat">Xem phẳng</button>
+    <button class="b" id="bUndo">Đi lại</button>
+    <button class="b p" id="bNew">Ván mới</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="boardbox">
+    <div class="bar">
+      <div class="chip"><span class="dot RED" id="dot"></span><span id="turnTxt">Lượt: Đỏ</span></div>
+      <div class="warn" id="warn">TƯ LỆNH BỊ CHIẾU!</div>
+      <div class="chip" id="modeTxt">2 người · 1 máy</div>
+    </div>
+    <div class="scene"><div id="stage"><div id="terrain"></div></div></div>
+  </div>
+
+  <div class="side">
+    <div class="pnl">
+      <h2>Chế độ</h2>
+      <div class="col">
+        <button class="b on" id="mLocal"> 2 người cùng máy</button>
+        <button class="b" id="mAI"> Đấu với máy</button>
+      </div>
+      <div id="aiBox" style="display:none;margin-top:8px" class="col">
+        <select id="lvl"><option value="1">Dễ</option><option value="2" selected>Trung bình</option><option value="3">Khó</option></select>
+        <div style="display:flex;gap:6px">
+          <button class="b sm on" id="sRed" style="flex:1">Cầm Đỏ</button>
+          <button class="b sm" id="sBlue" style="flex:1">Cầm Xanh</button>
+        </div>
+      </div>
+    </div>
+    <div class="pnl">
+      <h2>Quân bị bắt</h2>
+      <div class="note" style="margin-bottom:3px">Đỏ mất:</div><div class="cap" id="lostR"></div>
+      <div class="note" style="margin:7px 0 3px">Xanh mất:</div><div class="cap" id="lostB"></div>
+    </div>
+    <div class="pnl"><h2>Biên bản</h2><div class="log" id="log"></div></div>
+    <div class="pnl"><h2>Ký hiệu</h2><div class="leg" id="leg"></div></div>
+    <div class="pnl">
+      <h2>Online &amp; đăng nhập</h2>
+      <div class="note">Đăng nhập Google và đấu online qua ID bạn bè sẽ được update sau.</div>
+    </div>
+  </div>
+</div></div>
+
+<div class="mb" id="rules"><div class="md">
+  <h3>Luật chơi</h3>
+  <h4>Giới thiệu cờ Tư Lệnh</h4>
+  <ul>
+    <li><b>Cờ tư lệnh</b>:(tiếng Anh: commander chess) là một loại trò chơi dùng bàn cờ, do Đại tá, nhà văn <b>Nguyễn Quý Hải</b> người Việt Nam sáng tạo ra, dựa trên chiến tranh Việt Nam (1954-1975)
+    <li><b>Số người chơi</b>: 2.
+    <li><b>Thời gian chơi</b>: trùng bình 10-15 phút.
+  
+
+
+  <h4>- Bàn cờ &amp; toạ độ</h4>
+  <p>Bàn có 11 cột (0–10, từ trái sang phải) × 12 hàng (0–11, từ dưới lên trên). Quân đứng trên <b>giao điểm</b>. Toạ độ ghi theo dạng <b>(hàng, cột)</b>: ví dụ là (0,6) là ô Tư lệnh Đỏ, (11,6) là ô Tư lệnh Xanh. Đỏ ở nửa dưới (hàng 0–4), Xanh ở nửa trên (hàng 7–11).</p>
+  <p><b>Biển</b> chiếm 3 cột 0–2: cột 0–1 là lòng biển, chỉ Tàu chiến đi được (Không quân chỉ bay ngang qua, không hạ cánh); cột 2 là bờ chung, mọi quân (kể cả Tàu chiến) đều đứng được. <b>Sông</b> nằm giữa hàng 5 và hàng 6: các giao điểm trên hai hàng này là nước sâu, trừ hai chỗ <b>ngầm</b> ở cột 5 và cột 7.</p>
+
+  <h4>- Vị trí xếp quân ban đầu(chú ý dãy - ô số)</h4>
+  <p>Mỗi bên 19 quân: 1 Tư lệnh ; 2 Sở chỉ huy ; 2 Tàu chiến ; 2 Không quân ; 1 Tên lửa ; 2 Pháo binh ; 2 Cao xạ ; 2 Xe tăng ; 2 Bộ binh ; 2 Công binh ; 1 Dân quân. Xanh xếp đối xứng với Đỏ qua sông (hàng h của Đỏ ↔ hàng 11−h của Xanh, cùng cột).</p>
+  <div class="smapwrap" id="setupMap"></div>
+  <ul id="setupList"></ul>
+
+  <h4>- Cách đi từng quân</h4>
+  <ul id="ruleList"></ul>
+
+  <h4>- Sông &amp; biển</h4>
+  <ul>
+    <li>Qua sông tự do tại <b>cột ngầm 5 và 7</b>. Ngoài hai cột đó là đoạn nước sâu: chỉ Tư lệnh, Bộ binh, Công binh, Dân quân, Xe tăng đi qua trực tiếp được. Cao xạ, Tên lửa, Pháo binh phải nhờ Công binh cõng mới qua được — trừ khi chính nước đi đó là <b>ăn quân đối phương ở bờ bên kia</b>, lúc này được phép vượt sông ở bất kỳ đoạn nào. Không quân bay qua mọi địa hình nên không bị luật này chi phối.</li>
+    <li>Chỉ Tàu chiến hoạt động trong lòng biển (cột 0–1) và có thể tiến vào sông tới đúng cột ngầm gần nhất (cột 5). Cột 2 là bờ chung.</li>
+  </ul>
+
+  <h4>- Quy tắc cõng quân (hành quân thần tốc)</h4>
+  <ul>
+    <li><b>Ai cõng ai</b>: Tư lệnh, Bộ binh, Dân quân bước vào ô quân bạn là Xe tăng / Tàu chiến / Không quân để được cõng (Tư lệnh còn được chui vào Sở chỉ huy). Công binh <b>chỉ</b> cõng được Cao xạ, Pháo binh, Tên lửa — cách duy nhất để khí tài nặng qua đoạn sông sâu ngoài chỗ ngầm. Không quân bay tới hạ cánh lên Tàu chiến của mình thì tàu trở thành <b>tàu sân bay</b>. Xe tăng, Pháo binh, Tên lửa, Cao xạ không lên được Tàu chiến.</li>
+    <li><b>Sức chở</b>: mỗi quân chỉ cõng tối đa <b>1 quân</b>. Quân đang cõng không lên xe khác được, và quân đang ngồi trên xe không cõng thêm ai.</li>
+    <li><b>Tốn nước đi</b>: bước lên xe, hạ cánh lên tàu hay lên Công binh đều mất đúng 1 nước đi. Quân trên bộ bước sang ô liền kề (ngang dọc; Dân quân cả chéo).</li>
+    <li><b>Khi đã cõng</b>: mỗi lượt vẫn chỉ có 1 nước đi — hoặc đi cả cụm theo luật của phương tiện, hoặc cho quân ngồi trên tách ra đi/ăn/bắn riêng (từ xe cũng bắn tại chỗ được mà không rời xe, xe không bị ảnh hưởng). Game sẽ hỏi khi có nhiều lựa chọn cùng lúc. Bản này <b>không</b> áp dụng luật gốc "một nước ăn nhiều quân cùng lúc"; Tàu chiến cũng chỉ bắn một mục tiêu mỗi lượt (tên lửa hải đối hải và pháo hạm là hai nước đi riêng).</li>
+    <li><b>Quân tổ hợp bị bắn hạ</b>: khi một ô đang cõng nhau bị đối phương ăn (dù thế chỗ hay bắn tại chỗ), cả hai quân trên đó đều bị tiêu diệt cùng lúc.</li>
+  </ul>
+
+  <h4>- Chiếu, thắng &amp; hoà</h4>
+  <ul>
+    <li><b>Chiếu</b>: Tư lệnh bị chiếu khi ở nước tiếp theo, ít nhất một quân địch có nước ăn hợp lệ vào ô của Tư lệnh — tính cả quân đang được cõng, quân bắn tại chỗ, tên lửa / pháo hạm tầm xa và máy bay bay xuyên vật cản. Tư lệnh ẩn trong Sở chỉ huy chỉ bị chiếu bởi quân phá được Sở chỉ huy (Công binh, Xe tăng, Pháo binh, Không quân). Khi bị chiếu, game hiện cảnh báo.</li>
+    <li><b>Bắt buộc giải chiếu</b>: bên bị chiếu phải đi Tư lệnh ra chỗ an toàn, chặn đường tấn công (nếu chặn được) hoặc ăn quân đang chiếu. Nước đi nào để Tư lệnh còn bị chiếu — hay tự đưa Tư lệnh vào thế bị chiếu — không hiện ra để chọn.</li>
+    <li><b>Thắng</b>: (1) bắt (ăn) được Tư lệnh đối phương; (2) <b>chiếu bí</b> — đến lượt đi mà Tư lệnh đang bị chiếu và không còn nước giải thì bên đó thua.</li>
+    <li><b>Hoà</b>: (1) đến lượt đi mà hết nước đi nhưng Tư lệnh <b>không</b> bị chiếu (bí nước); (2) cùng một thế cờ (vị trí quân, bên đi, quân anh hùng, quân cõng) lặp lại lần thứ 3; (3) hai bên không còn quân nào ngoài Tư lệnh và Sở chỉ huy (không đủ quân để chiếu).</li>
+    <li><b>Không áp dụng trong bản này</b>: thắng khi tiêu diệt toàn bộ một binh chủng (hải quân 2 tàu, lục quân gồm Pháo binh – Xe tăng – Bộ binh, không quân 2 máy bay); kết thúc ván theo thời gian hay so điểm. Ván chỉ kết thúc theo các điều kiện thắng/hoà ở trên.</li>
+    <li>Hai Tư lệnh không được nhìn thẳng mặt nhau trên cùng một đường trống.</li>
+  </ul>
+
+  <h4>- Quân anh hùng </h4>
+  <ul>
+    <li><b>Phong hùng</b>: quân nào trực tiếp chiếu được Tư lệnh đối phương (buộc Tư lệnh phải chạy) được phong anh hùng, giữ danh hiệu đến hết ván.</li>
+    <li><b>Sức mạnh</b>: mọi tầm đi, ăn và bắn tại chỗ được cộng thêm <b>1 đoạn</b>; Bộ binh, Công binh, Cao xạ, Xe tăng anh hùng còn được <b>đi và ăn thêm cả đường chéo 45°</b> (các quân khác vốn đã đi được chéo).</li>
+    <li><b>Máy bay tàng hình</b>: Không quân anh hùng <b>miễn nhiễm mọi hoả lực phòng không</b> — bay xuyên, hạ cánh hay ăn quân ngay trong vùng cấm bay của Cao xạ, Tên lửa và Cao xạ trên tàu mà không bị bắn rơi, không phải "một đổi một". Vì vậy máy bay chiếu được Tư lệnh là lập tức thoát khỏi phòng không của đối phương.</li>
+  </ul>
+
+  <h4>- Quy tắc riêng khác</h4>
+  <ul>
+    <li><b>Sở chỉ huy</b>: 2 quân mỗi bên, đứng ngay trước Tư lệnh, đứng yên tuyệt đối, không tự đi/ăn quân — chỉ là vật cản. Chỉ Công binh / Xe tăng / Pháo binh / Không quân phá được. Chỉ Tư lệnh được bước vào ẩn náu trên đó bất cứ lúc nào rồi rời đi sau; nếu Sở chỉ huy đang chứa Tư lệnh mà bị phá thì Tư lệnh bị diệt.</li>
+    <li><b>Bắn tại chỗ</b>: Bộ binh / Công binh / Cao xạ / Dân quân bắn tàu chiến cách 1 đoạn (2 nếu là anh hùng) mà không cần thế chỗ. Xe tăng bắn tàu chiến trong tầm 1–2 đoạn tại chỗ. Pháo binh bắn tàu chiến trong đúng tầm đi của nó (thẳng 1–2 đoạn, chéo 1 đoạn) tại chỗ; ăn quân trên bộ thì đi thẳng tới thế chỗ như quân thường. Tàu chiến tự di chuyển (và thế chỗ khi ăn) thẳng/ngang/chéo tối đa 4 đoạn, bị vật cản đầu tiên chặn lại; còn tên lửa hải đối hải (ăn tàu địch) và pháo hạm (bắn mục tiêu trên bộ, tầm 3) là hoả lực tầm xa, không bị vật cản giữa đường chặn — tên lửa chỉ bắt buộc thế chỗ khi đường biển đi thẳng tới đó còn trống, nếu không thì bắn tại chỗ; pháo hạm luôn bắn tại chỗ.</li>
+    <li><b>Vùng cấm bay</b>: Cao xạ phủ bán kính 1 (cả 8 ô quanh); Tàu chiến mang cao xạ nên cũng phủ bán kính 1 quanh nó; Tên lửa phủ 2 ô theo trục và 1 ô chéo. Không quân bay vào vùng cấm mà ở đó có quân địch thì cả hai cùng bị tiêu diệt (1 đổi 1) — áp dụng cho bất kỳ quân nào nằm trong vùng đó, không riêng gì trận địa gây ra nó. Nếu ô trong vùng cấm đang trống thì coi như bị bắn rơi, không đi được. Không quân không bao giờ được hạ cánh xuống biển (chỉ bay qua). Không quân anh hùng được miễn luật này.</li>
+  </ul>
+
+  <h4>- Kinh nghiệm chơi Cờ Tư lệnh</h4>
+  <p>Quá trình chơi Cờ tư lệnh, có thể rút ra cách đánh sao cho hiệu quả, ít mất quân mà vẫn giành thắng lợi. Qua một thời gian, khi đã chơi thành thạo, người chơi cờ có thể rút ra các nước chơi, các thế cờ tối ưu.</p>
+  <p>Chơi Cờ Tư lệnh, không bị gò bó về bố trí quân và phát huy tối đa mưu trí, sáng tạo, quyết đoán, rèn luyện tài tổ chức lực lượng giành chiến thắng.</p>
+  <p>Khi đã chơi thành thạo, người chơi chuyển lên chơi nâng cao. Trong cách chơi nâng cao, hai bên bí mật bố trí đội hình của mình. Khi bắt đầu chơi mới cùng lộ đội hình, buộc người chơi phải nhanh chóng xử trí mọi tình huống.</p>
+  <p class="verse">… Phải nhìn cho rộng suy cho kỹ<br>Kiên quyết không ngừng thế tấn công<br>… Lạc nước hai Xe đành bỏ phí<br>Gặp thời một Tốt cũng thành công…<br>… Tấn công phòng thủ không sơ hở<br>Đại tướng anh hùng mới xứng danh.</p>
+
+  <h4>- Lời nhắn của tác giả web Cotulenh.com</h4>
+  <p> Trân trọng giới thiệu, em là Trần Minh Vũ học sinh lớp 11A3 trường THPT Quảng Oai, cũng là tác giả của web trò chơi cờ Tư Lệnh này. Rất cảm ơn người chơi đã ghé thăm và chơi web trò chơi cờ.Tư Lệnh này. Trong quá trình xây dựng và lập trình cũng không thể trách được những sai xót về kĩ thuật hay luật lệ trò chơi, lên người chơi khi thấy điều luật game không hợp lí hay lỗi game, thì có thể liên hệ tới địa trỉ email này : minhvuduoc10diem2@gmail.com .</p>
+  <p> Thank you so much! </p>
+
+  <div style="text-align:right;margin-top:14px"><button class="b p" id="bClose">Đóng</button></div>
+</div></div>
+<div class="over" id="over"><div class="c">
+  <h2 id="ovT"></h2><p id="ovP"></p>
+  <button class="b p" id="ovB">Ván mới</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
